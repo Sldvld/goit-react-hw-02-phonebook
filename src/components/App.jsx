@@ -1,45 +1,61 @@
-import React from 'react';
 import { nanoid } from 'nanoid';
-import { Form } from './Form/Form';
+import React from 'react';
+import ContactList from './ContactList/ContactList';
+import Filter from './Filter/Filter';
+import Form from './Form/Form';
+
 export class App extends React.Component {
   state = {
-    contacts: [],
+    contacts: [
+      { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
+      { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
+      { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
+      { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
+    ],
+    filter: '',
   };
 
-  formSubmitHandler = data => {
-    console.log(data);
+  handleForm = ({ name, number }) => {
+    const newContact = {
+      id: nanoid(),
+      name,
+      number,
+    };
+    this.state.contacts.find(
+      contact => contact.name.toLowerCase() === newContact.name.toLowerCase()
+    )
+      ? alert(`${name} is already in contacts`)
+      : this.setState(prevState => ({
+          contacts: [newContact, ...prevState.contacts],
+        }));
+  };
+
+  handleFilter = evt => {
+    this.setState({ filter: evt.currentTarget.value });
+  };
+
+  deleteContact = contactId => {
+    this.setState(({ contacts }) => ({
+      contacts: contacts.filter(contact => contact.id !== contactId),
+    }));
   };
 
   render() {
-    return (
-      <div>
-        <Form onSubmit={this.formSubmitHandler} />
-      </div>
+    const filter = this.state.filter.toLowerCase();
+    const filteredContacts = this.state.contacts.filter(contact =>
+      contact.name.toLowerCase().includes(filter)
     );
-    // return (
-    //   <form onSubmit={this.handleSubmit}>
-    //     <label htmlFor="name">Name</label>
-    //     <input
-    //       type="text"
-    //       name="name"
-    //       value={this.state.name}
-    //       onChange={this.handleChange}
-    //       pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-    //       title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
-    //       required
-    //     />
-    //     <label htmlFor="number">Number</label>
-    //     <input
-    //       type="tel"
-    //       name="number"
-    //       value={this.state.number}
-    //       onChange={this.handleChange}
-    //       pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
-    //       title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
-    //       required
-    //     />
-    //     <button type="submit">Add contact</button>
-    //   </form>
-    // );
+    return (
+      <section>
+        <h1>Phonebook</h1>
+        <Form onSubmit={this.handleForm} />
+        <h2>Contacts</h2>
+        <Filter value={this.state.filter} onChange={this.handleFilter} />
+        <ContactList
+          contacts={filteredContacts}
+          deleteContact={this.deleteContact}
+        />
+      </section>
+    );
   }
 }
