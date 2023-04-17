@@ -4,6 +4,8 @@ import ContactList from './ContactList/ContactList';
 import Filter from './Filter/Filter';
 import Form from './Form/Form';
 
+import css from './App.module.css';
+
 export class App extends React.Component {
   state = {
     contacts: [
@@ -47,10 +49,12 @@ export class App extends React.Component {
     );
     return (
       <section>
-        <h1>Phonebook</h1>
+        <h1 className={css.formTitle}>Phonebook</h1>
         <Form onSubmit={this.handleForm} />
-        <h2>Contacts</h2>
-        <Filter value={this.state.filter} onChange={this.handleFilter} />
+        <div className={css.filterBlock}>
+          <h2 className={css.contactTitle}>Contacts</h2>
+          <Filter value={this.state.filter} onChange={this.handleFilter} />
+        </div>
         <ContactList
           contacts={filteredContacts}
           deleteContact={this.deleteContact}
